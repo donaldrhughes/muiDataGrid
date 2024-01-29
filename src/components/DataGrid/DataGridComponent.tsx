@@ -1,6 +1,7 @@
 import * as React from "react";
 import { DataGrid, GridRowsProp, GridColDef } from "@mui/x-data-grid";
 import Box from "@mui/material/Box";
+import { createTheme, ThemeProvider } from "@mui/material";
 
 const rows: GridRowsProp = [
   { id: 1, col1: "Hello", col2: "World" },
@@ -17,13 +18,37 @@ const columns: GridColDef[] = [
   { field: "col2", headerName: "Column 2", width: 150 },
 ];
 
+
+const theme = createTheme({
+  components: {
+    //@ts-ignore - this isn't in the TS because DataGird is not exported from `@mui/material`
+    MuiDataGrid: {
+      styleOverrides: {
+        row: {
+          "&.Mui-selected": {
+            backgroundColor: "purple",
+            color: "orange",
+            "&:hover": {
+              backgroundColor: "green"
+            }
+          }
+        }
+      }
+    }
+  }
+});
+
 export default function DataGridComponent() {
   return (
+    <ThemeProvider theme={theme}>
     <Box sx={{ height: 300, width: "100%" }}>
       <DataGrid
         rows={rows}
         columns={columns}
         checkboxSelection
+        getRowClassName={(params) => {
+          return params.row.id === 1 ? "highlight" : "";
+        }}
         sx={{
           boxShadow: 2,
           border: 2,
@@ -32,8 +57,15 @@ export default function DataGridComponent() {
           "& .MuiDataGrid-cell:hover": {
             color: "primary.main",
           },
+          ".highlight": {
+            bgcolor: "lightyellow",
+            "&:hover": {
+              bgcolor: "yellow",
+            },
+          },
         }}
       />
     </Box>
+    </ThemeProvider>
   );
 }
